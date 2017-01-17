@@ -1,0 +1,44 @@
+model {
+for (i in 1:N) {
+logit(p[i]) <- alpha[subj[i]] + beta1[subj[i]]*rating[i] + beta2[subj[i]]*prob[i] + in.mod.dv[subj[i]]*beta3[subj[i]]*rating[i]*prob[i] + in.mod.dv.irr[subj[i]]*beta4[subj[i]]*ratingirr[i]*probirr[i] + in.mod.abs.diff[subj[i]]*beta5[subj[i]]*abs((rating[i]*prob[i])-(ratingirr[i]*probirr[i]))
+y[i] ~ dbern(p[i]);
+
+}
+
+for (s in 1:45) {
+alpha[s] ~ dnorm(alphagmean, alphagprec)
+beta1[s] ~ dnorm(beta1gmean, beta1gprec)
+beta2[s] ~ dnorm(beta2gmean, beta2gprec)
+beta3[s] ~ dnorm(beta3gmean, beta3gprec)
+beta4[s] ~ dnorm(beta4gmean, beta4gprec)
+beta5[s] ~ dnorm(beta5gmean, beta5gprec)
+mod[s] ~ dcat(pmod[1:4])
+
+mod1[s] <- mod[s] == 1
+mod2[s] <- mod[s] == 2
+mod3[s] <- mod[s] == 3
+mod4[s] <- mod[s] == 4
+
+in.mod.dv[s] <- mod2[s] + mod3[s] + mod4[s]
+in.mod.dv.irr[s] <- mod3[s] + mod4[s]
+in.mod.abs.diff[s] <- mod4[s]
+
+}
+
+alphagmean ~ dnorm(0, 0.001)
+beta1gmean ~ dnorm(0, 0.001)
+beta2gmean ~ dnorm(0, 0.001)
+beta3gmean ~ dnorm(0, 0.001)
+beta4gmean ~ dnorm(0, 0.001)
+beta5gmean ~ dnorm(0, 0.001)
+
+alphagprec ~ dgamma(.1, .1)
+beta1gprec ~ dgamma(.1, .1)
+beta2gprec ~ dgamma(.1, .1)
+beta3gprec ~ dgamma(.1, .1)
+beta4gprec ~ dgamma(.1, .1)
+beta5gprec ~ dgamma(.1, .1)
+
+pmod[1:4] ~ ddirch(dd[1:4])
+
+}
